@@ -18,6 +18,7 @@ def load_data():
     return pd.read_excel("hado_stats.xlsx")
 
 df = load_data()
+df["timestamp"] = pd.to_datetime(df["timestamp"])
 
 # Funcion para colorear filas de MVP
 def highlight_mvp(row):
@@ -56,8 +57,32 @@ tab_partido, tab_global = st.tabs(["📊 Partido", "📈 Global"])
 with tab_partido:
     st.header("📊 Estadísticas por partido")
 
-    match_ids = sorted(df["MatchId"].unique())
-    selected_match = st.selectbox("Selecciona un partido", match_ids)
+    #match_ids = sorted(df["timestamp"].unique())
+    #selected_match = st.selectbox("Selecciona un partido", match_ids)
+    
+    # Tabla de partidos (uno por MatchId)
+    matches = (
+        df[["MatchId", "timestamp"]]
+        .drop_duplicates()
+        .sort_values("timestamp", ascending=False)
+    )
+
+    # Texto legible para el selectbox
+    matches["label"] = matches.apply(
+        lambda x: f"{x['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}",
+        axis=1
+    )
+    
+    selected_label = st.selectbox(
+        "Selecciona un partido",
+        matches["label"]
+    )
+
+    # Recuperamos el MatchId real
+    selected_match = matches.loc[
+        matches["label"] == selected_label,
+        "MatchId"
+    ].iloc[0]
 
     match_df = df[df["MatchId"] == selected_match]
 
