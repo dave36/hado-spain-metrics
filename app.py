@@ -15,7 +15,7 @@ st.set_page_config(
 # --------------------------------------------------
 @st.cache_data
 def load_data():
-    return pd.read_excel("hado_stats_2026_31_01.xlsx")
+    return pd.read_excel("hado_stats_2026_02_01.xlsx")
 
 df = load_data()
 df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -39,7 +39,7 @@ def detect_role(row):
         return "Spammer"
 
     # Tirador
-    if row["BulletScale"] >= 4:
+    if row["BulletScale"] >= 4 or row["BulletSpeed"] >= 4:
         return "Tirador"
 
     return "Otro"
@@ -92,8 +92,8 @@ with tab_partido:
 
     st.subheader("🏁 Resultado final")
     col_r, col_b = st.columns(2)
-    col_b.metric("🔵 Azul", score_blue)
     col_r.metric("🔴 Rojo", score_red)
+    col_b.metric("🔵 Azul", score_blue)
 
     # ------------------------
     # TABLAS POR EQUIPO
@@ -108,21 +108,7 @@ with tab_partido:
         "MVP"
     ]
 
-    col_blue, col_red = st.columns(2)
-
-    with col_blue:
-        st.markdown("### 🔵 Equipo Azul")
-        blue_df = match_df[match_df["Team"] == "Blue"][cols_to_show]
-        st.dataframe(
-        blue_df
-        .rename(columns={
-            "BrokenPlayer": "Kills",
-            "Out": "Muertes",
-            "InvokeSkills": "Bolas tiradas"
-        })
-        .style.apply(highlight_mvp, axis=1),
-        use_container_width=True
-        )
+    col_red,col_blue = st.columns(2)
 
     with col_red:
         st.markdown("### 🔴 Equipo Rojo")
@@ -138,6 +124,19 @@ with tab_partido:
         use_container_width=True
     )
 
+    with col_blue:
+        st.markdown("### 🔵 Equipo Azul")
+        blue_df = match_df[match_df["Team"] == "Blue"][cols_to_show]
+        st.dataframe(
+        blue_df
+        .rename(columns={
+            "BrokenPlayer": "Kills",
+            "Out": "Muertes",
+            "InvokeSkills": "Bolas tiradas"
+        })
+        .style.apply(highlight_mvp, axis=1),
+        use_container_width=True
+        )
 
 
     # ------------------------
