@@ -443,3 +443,4 @@ with tab_global:
 st.markdown("---")
 
 st.caption("Hado Stats Dashboard · Streamlit")
+
