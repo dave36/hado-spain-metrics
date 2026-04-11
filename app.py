@@ -15,7 +15,7 @@ st.set_page_config(
 # --------------------------------------------------
 @st.cache_data
 def load_data():
-    return pd.read_excel("hado_stats_2026_03_13.xlsx")
+    return pd.read_excel("hado_stats_2026_04_11.xlsx")
 
 df = load_data()
 df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -145,12 +145,21 @@ with tab_partido:
     st.subheader("Bolas tiradas por equipo")
 
     team_shots = (
-        match_df
-        .groupby("Team")["InvokeSkills"]
-        .sum()
-        .reset_index()
-        .rename(columns={"InvokeSkills": "Total bolas"})
+    match_df
+    .groupby("Team")["InvokeSkills"]
+    .sum()
+    .reset_index()
+    .rename(columns={"InvokeSkills": "Total bolas"})
+)
+
+    # Forzar orden: Red primero, Blue después
+    team_shots["Team"] = pd.Categorical(
+        team_shots["Team"],
+        categories=["Red", "Blue"],
+        ordered=True
     )
+
+    team_shots = team_shots.sort_values("Team")
 
     st.bar_chart(team_shots.set_index("Team"))
 
