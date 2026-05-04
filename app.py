@@ -15,7 +15,7 @@ st.set_page_config(
 # --------------------------------------------------
 @st.cache_data
 def load_data():
-    return pd.read_excel("hado_stats_2026_04_11.xlsx")
+    return pd.read_excel("hado_stats_coventry.xlsx")
 
 df = load_data()
 df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -102,6 +102,7 @@ with tab_partido:
 
     cols_to_show = [
         "PlayerId",
+        "Role",
         "BrokenPlayer",   # kills
         "Out",            # muertes
         "InvokeSkills",    # bolas tiradas
